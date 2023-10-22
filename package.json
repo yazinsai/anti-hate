@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "refresh": "npx bun ./src/scripts/refresh-posts-from-linkedin.ts"
+    "refresh": "npx --yes tsx ./src/scripts/refresh-posts-from-linkedin.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.4.2",

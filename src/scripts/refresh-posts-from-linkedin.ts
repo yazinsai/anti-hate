@@ -9,7 +9,6 @@ import { PrismaClient } from '@prisma/client';
 import posts from "./responses.json";
 
 const prisma = new PrismaClient();
-const DEFAULT_LANG = 'en'
 
 async function parsePosts() {
     try {
@@ -21,21 +20,32 @@ async function parsePosts() {
             await prisma.posts.upsert({
                 where: { id: post.id },
                 update: {
-                    lang: post.lang ?? DEFAULT_LANG,
+                    lang: post.lang ?? '',
                     authorId: post.author_id,
                     text: post.text ?? post.article?.title,
                     url: post.url,
                     isProcessed: false,
                     isFlagged: false,
+                    createdAt: new Date(post.timestamp * 1000),
                 },
                 create: {
                     id: post.id,
-                    lang: post.lang ?? DEFAULT_LANG,
-                    authorId: post.author_id,
+                    lang: post.lang ?? '',
+                    author: {
+                        connectOrCreate: {
+                            where: { id: post.author_id },
+                            create: {
+                                id: post.author_id,
+                                name: post.author.name,
+                                username: post.author.username,
+                            }
+                        }
+                    },
                     text: post.text ?? post.article?.title ?? '',
                     url: post.url,
                     isProcessed: false,
                     isFlagged: false,
+                    createdAt: new Date(post.timestamp * 1000),
                 },
             });
         }
