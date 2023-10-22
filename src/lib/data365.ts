@@ -1,23 +1,26 @@
+const DAY = 24 * 60 * 60 * 1000;
+
 class Data365 {
     constructor(private apiKey: string) { }
 
-    async submitKeywordSearch(keyword: string) {
-        const response = await fetch('https://api.data365.co/v1.1/linkedin/search', {
+    async submitKeywordSearch(keyword: string, from_date: string = new Date(Date.now() - 1 * DAY).toISOString()) {
+        const response = await fetch('https://api.data365.co/v1.1/linkedin/posts/search', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'api_key': this.apiKey
             },
             body: JSON.stringify({
-                api_key: this.apiKey,
-                keyword: keyword
+                keyword: keyword,
+                from_date: from_date
             })
         });
         const data = await response.json();
         return data;
     }
 
-    async checkSearchStatus(searchId: string) {
-        const response = await fetch(`https://api.data365.co/v1.1/linkedin/search/${searchId}`, {
+    async getCachedPosts(keyword: string, from_date: string = new Date(Date.now() - 1 * DAY).toISOString()) {
+        const response = await fetch(`https://api.data365.co/v1.1/linkedin/posts/search/cached?keyword=${keyword}&from_date=${from_date}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'api_key': this.apiKey
