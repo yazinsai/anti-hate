@@ -8,7 +8,7 @@ class Mistral {
     }
 
     async start(): Promise<void> {
-        await this.ollama.setModel("llama2")
+        await this.ollama.setModel("mistral")
     }
 
     async shouldBeFlagged(text: string): Promise<boolean> {
