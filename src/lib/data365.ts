@@ -1,7 +1,13 @@
 const DAY = 24 * 60 * 60 * 1000;
 
 class Data365 {
-    constructor(private apiKey: string) { }
+    constructor(private apiKey: string) {
+        if (!apiKey) {
+            throw new Error('API key is required');
+        }
+
+        this.apiKey = apiKey;
+    }
 
     async submitKeywordSearch(keyword: string, from_date: string = new Date(Date.now() - 1 * DAY).toISOString()) {
         const response = await fetch('https://api.data365.co/v1.1/linkedin/posts/search', {
@@ -31,5 +37,5 @@ class Data365 {
     }
 }
 
-export default Data365;
+export default new Data365(process.env.DATA365_API_KEY || '');
 
