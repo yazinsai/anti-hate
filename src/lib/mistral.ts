@@ -11,10 +11,10 @@ class Mistral {
         await this.ollama.setModel("mistral")
     }
 
-    async shouldBeFlagged(text: string): Promise<boolean> {
-        const prompt = `If the post below contains any hate speech or incites violence, reply with 'YES' else reply with 'NO'. --- Post --- ${text}`
+    async isFlagged(text: string): Promise<boolean> {
+        const prompt = `If the post contains hate speech or incites violence, reply with 'YES'. Otherwise, reply 'NO'. Post: ${text}`
         const { output } = await this.ollama.generate(prompt);
-        return output.toLowerCase().includes("yes")
+        return output.startsWith("YES")
     }
 }
 
