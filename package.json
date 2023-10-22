@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "refresh": "npx bun ./src/scripts/refresh-posts-from-linkedin.ts"
   },
   "dependencies": {
+    "@prisma/client": "^5.4.2",
     "next": "13.5.6",
     "ollama-node": "^0.1.6",
     "react": "^18",

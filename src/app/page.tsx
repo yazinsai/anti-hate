@@ -14,11 +14,10 @@ export default async function Home() {
       <h1>Test post</h1>
       <h2>Post</h2>
       <div>{post}</div>
-      <hr/>
+      <hr />
       <h2>Result</h2>
       <div>{isFlagged ? 'Flagged' : 'Not flagged'}</div>
-      </main>
-
+    </main>
   )
 }
 
