@@ -27,7 +27,7 @@ async function parsePosts(response: any) {
         const parsedData = ResponseSchema.parse(response);
 
         // Iterate over the parsed posts and create or update the corresponding Prisma models
-        for (const post of parsedData.data.items) {
+        for (const post of parsedData.data.posts) {
             await prisma.posts.upsert({
                 where: { id: post.id },
                 update: {
