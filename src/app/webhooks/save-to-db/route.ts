@@ -9,6 +9,13 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+export async function POST(request: Request) {
+    const res = await request.json()
+    await parsePosts(res);
+
+    return new Response('OK - ✅ Processed');
+}
+
 async function parsePosts(response: any) {
     try {
         // Parse the posts data using the ResponseSchema
@@ -55,11 +62,4 @@ async function parsePosts(response: any) {
     } finally {
         await prisma.$disconnect();
     }
-}
-
-export async function POST(request: Request) {
-    const res = await request.json()
-    await parsePosts(res);
-
-    return new Response('OK - ✅ Processed');
 }
