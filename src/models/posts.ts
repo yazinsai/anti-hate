@@ -59,12 +59,24 @@ const PostSchema = z.object({
   views_count: z.number().nullable(),
 });
 
+const SearchSchema = z.object({
+  companies: z.null(),
+  date_posted: z.string(),
+  from_companies: z.null(),
+  keywords: z.string(),
+  members: z.null(),
+  results_count: z.null(),
+  sort_type: z.string(),
+});
+export type SearchSchema = z.infer<typeof SearchSchema>;
+
 export const ResponseSchema = z.object({
   data: z.object({
     posts: z.object({
-      items: z.array(PostSchema)
+      items: z.array(PostSchema),
+      page_info: PageInfoSchema,
     }),
-    page_info: PageInfoSchema,
+    search: SearchSchema,
   }),
   error: z.null(),
   status: z.string(),

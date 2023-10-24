@@ -61,6 +61,14 @@ async function parsePosts(response: any) {
             });
         }
 
+        // Handle pagination
+        const pageInfo = parsedData.data.posts.page_info;
+        if (pageInfo.has_next_page) {
+            // Fetch next page and parse posts
+            const nextPageResponse = await data365.getPosts(parsedData.data.search, pageInfo.cursor);
+            await parsePosts(nextPageResponse);
+        }
+
         console.log('Posts parsed and saved successfully!');
     } catch (error) {
         throw new Error(`Error parsing posts: ${error}`);

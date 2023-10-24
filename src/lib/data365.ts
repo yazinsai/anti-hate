@@ -1,3 +1,5 @@
+import type { SearchSchema } from "@/models/posts";
+
 const DAY = 24 * 60 * 60 * 1000;
 
 class Data365 {
@@ -27,6 +29,19 @@ class Data365 {
 
     async getCachedPosts(keyword: string, from_date: string = new Date(Date.now() - 1 * DAY).toISOString()) {
         const response = await fetch(`https://api.data365.co/v1.1/linkedin/posts/search/cached?keyword=${keyword}&from_date=${from_date}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'api_key': this.apiKey
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+
+    async getPosts(params: Partial<SearchSchema>, cursor: string = '') {
+        // Filter falsy values from params
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v));
+        const response = await fetch(`https://api.data365.co/v1.1/linkedin/posts/search?${new URLSearchParams(filteredParams as Record<string, string>)}&cursor=${cursor}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'api_key': this.apiKey
