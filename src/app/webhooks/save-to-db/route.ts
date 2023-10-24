@@ -11,7 +11,12 @@ const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
     const res = await request.json()
-    await parsePosts(res);
+    try {
+        await parsePosts(res);
+    } catch (error) {
+        console.error(error);
+        return new Response('Error - ❌ Failed to parse posts');
+    }
 
     return new Response('OK - ✅ Processed');
 }
@@ -58,7 +63,7 @@ async function parsePosts(response: any) {
 
         console.log('Posts parsed and saved successfully!');
     } catch (error) {
-        console.error('Error parsing and saving posts:', error);
+        throw new Error(`Error parsing posts: ${error}`);
     } finally {
         await prisma.$disconnect();
     }
