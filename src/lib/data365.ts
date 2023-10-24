@@ -1,4 +1,4 @@
-import type { SearchSchema } from "@/models/posts";
+import type { Search } from "@/models/posts";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -38,10 +38,10 @@ class Data365 {
         return data;
     }
 
-    async getPosts(params: Partial<SearchSchema>, cursor: string = '') {
+    async getPosts(params: Partial<Search>, cursor: string = '') {
         // Filter falsy values from params
         const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v));
-        const response = await fetch(`https://api.data365.co/v1.1/linkedin/posts/search?${new URLSearchParams(filteredParams as Record<string, string>)}&cursor=${cursor}`, {
+        const response = await fetch(`https://api.data365.co/v1.1/linkedin/post/search/posts?access_token=${this.apiKey}&max_page_size=100&${new URLSearchParams(filteredParams as Record<string, string>)}&cursor=${cursor}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'api_key': this.apiKey

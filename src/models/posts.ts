@@ -4,6 +4,7 @@ const PageInfoSchema = z.object({
   cursor: z.string(),
   has_next_page: z.boolean(),
 });
+export type PageInfo = z.infer<typeof PageInfoSchema>;
 
 const AuthorSchema = z.object({
   id: z.string(),
@@ -58,6 +59,7 @@ const PostSchema = z.object({
   video: z.object({}).nullable(),
   views_count: z.number().nullable(),
 });
+export type Post = z.infer<typeof PostSchema>;
 
 const SearchSchema = z.object({
   companies: z.null(),
@@ -68,7 +70,7 @@ const SearchSchema = z.object({
   results_count: z.null(),
   sort_type: z.string(),
 });
-export type SearchSchema = z.infer<typeof SearchSchema>;
+export type Search = z.infer<typeof SearchSchema>;
 
 export const ResponseSchema = z.object({
   data: z.object({

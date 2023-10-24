@@ -4,7 +4,7 @@
 /// This script is intended to be run on a schedule (e.g. daily) to keep the posts up to date
 
 import data365 from '@/lib/data365';
-import { ResponseSchema } from '@/models/posts';
+import { PageInfo, Post, ResponseSchema } from '@/models/posts';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -12,23 +12,22 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
     const res = await request.json()
     try {
-        await parsePosts(res);
+        const {data} = ResponseSchema.parse(res);
+        await parsePosts(data.posts.items, data.search, data.posts.page_info);
     } catch (error) {
-        console.error(error);
-        return new Response(JSON.stringify(error), { status: 400 });
+        return new Response(JSON.stringify({ input: res, error }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 
     return new Response('OK - ✅ Processed');
 }
 
-async function parsePosts(response: any) {
+async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
     try {
-        // Parse the posts data using the ResponseSchema
-        const parsedData = ResponseSchema.parse(response);
-
         // Iterate over the parsed posts and create or update the corresponding Prisma models
-        for (const post of parsedData.data.posts.items) {
-            await prisma.posts.upsert({
+        const operations = posts.map((post) => {
+            return prisma.posts.upsert({
                 where: { id: post.id },
                 update: {
                     lang: post.lang ?? '',
@@ -59,14 +58,16 @@ async function parsePosts(response: any) {
                     createdAt: new Date(post.timestamp * 1000),
                 },
             });
-        }
+        })
+
+        // Execute the operations as a single transaction
+        await prisma.$transaction(operations);
 
         // Handle pagination
-        const pageInfo = parsedData.data.posts.page_info;
         if (pageInfo.has_next_page) {
             // Fetch next page and parse posts
-            const nextPageResponse = await data365.getPosts(parsedData.data.search, pageInfo.cursor);
-            await parsePosts(nextPageResponse);
+            const {data} = await data365.getPosts(search, pageInfo.cursor);
+            await parsePosts(data.items, search, data.page_info);
         }
 
         console.log('Posts parsed and saved successfully!');
