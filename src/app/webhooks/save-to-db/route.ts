@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         await parsePosts(res);
     } catch (error) {
         console.error(error);
-        return new Response('Error - ❌ Failed to parse posts');
+        return new Response(JSON.stringify(error), { status: 400 });
     }
 
     return new Response('OK - ✅ Processed');
@@ -71,7 +71,7 @@ async function parsePosts(response: any) {
 
         console.log('Posts parsed and saved successfully!');
     } catch (error) {
-        throw new Error(`Error parsing posts: ${error}`);
+        throw error;
     } finally {
         await prisma.$disconnect();
     }
