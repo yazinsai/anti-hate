@@ -61,7 +61,9 @@ const PostSchema = z.object({
 
 export const ResponseSchema = z.object({
   data: z.object({
-    posts: z.array(PostSchema),
+    posts: z.object({
+      items: z.array(PostSchema)
+    }),
     page_info: PageInfoSchema,
   }),
   error: z.null(),
