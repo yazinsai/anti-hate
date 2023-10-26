@@ -14,11 +14,10 @@ class Mistral {
     }
 
     async isFlagged(text: string): Promise<boolean> {
-        const prompt = `If the post explicitly contains hate speech or directly incites violence, reply with 'YES'. Otherwise, reply 'NO'. Do NOT explain. Post: ${text}`
+        const prompt = `If the post explicitly incites violence, reply with 'YES'. Otherwise, reply 'NO'. Do NOT explain. Post: ${text}\n\nOutput: `
         const output = await this.submit(prompt);
         return output.startsWith("YES")
     }
-
 
     async submit(prompt: string) {
         if (this.mode === 'local') {
@@ -34,26 +33,26 @@ class Mistral {
         return output
     }
 
+    // Find models through curl -H 'Authorization: Bearer $FIREWORKS_API_KEY'  https://api.fireworks.ai/inference/v1/models
     async _remote(prompt: string) {
-        const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.FIREWORKS_API_KEY!}`
-                },
-                body: JSON.stringify({
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ],
-                    "model": "accounts/fireworks/models/mistral-7b-instruct-4k"
-                })
-            });
-            const data = await response.json();
-            return data.choices[0].message.content
+        const response = await fetch('https://api.fireworks.ai/inference/v1/completions', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.FIREWORKS_API_KEY!}`
+            },
+            body: JSON.stringify({
+                model: "accounts/fireworks/models/mistral-7b-instruct-4k",
+                prompt,
+                n: 1,
+                max_tokens: 50,
+                temperature: 0,
+                top_p: 0,
+            })
+        });
+        const data = await response.json();
+        return data.choices[0].text.trim()
     }
 }
 
