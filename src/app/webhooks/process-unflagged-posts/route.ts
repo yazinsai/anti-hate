@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 export async function GET(request: Request) {
     try {
         await processUnflaggedPosts();
-    } catch (error) {
-        return new Response('Error - ❌ Failed to process posts');
+    } catch (error: any) {
+        return new Response(`Error - ❌ Failed to process posts: ${error.message}`);
     }
 
     return new Response('OK - ✅ Processed');
