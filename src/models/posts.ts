@@ -36,7 +36,7 @@ const PostSchema = z.object({
   carousel: z.null(),
   comments_count: z.number().nullable(),
   created_time: z.string(),
-  document: z.null(),
+  document: z.any(),
   empathy_count: z.number().nullable(),
   entertainment_count: z.number().nullable(),
   hashtags: z.array(z.string()).nullable(),
@@ -67,7 +67,7 @@ const SearchSchema = z.object({
   from_companies: z.null(),
   keywords: z.string(),
   members: z.null(),
-  results_count: z.null(),
+  results_count: z.any(),
   sort_type: z.string(),
 });
 export type Search = z.infer<typeof SearchSchema>;
