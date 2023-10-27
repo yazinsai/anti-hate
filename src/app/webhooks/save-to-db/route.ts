@@ -12,15 +12,15 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
     const res = await request.json()
     try {
-        const {data} = ResponseSchema.parse(res);
-        await parsePosts(data.posts.items, data.search, data.posts.page_info);
+        const { data } = ResponseSchema.parse(res);
+        const numPosts = await parsePosts(data.posts.items, data.search, data.posts.page_info);
+        return new Response(`OK - ✅ Processed ${numPosts} posts`);
     } catch (error) {
         return new Response(JSON.stringify({ input: res, error }), {
             headers: { 'Content-Type': 'application/json' },
+            status: 500,
         });
     }
-
-    return new Response('OK - ✅ Processed');
 }
 
 async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
@@ -63,13 +63,16 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
         // Execute the operations as a single transaction
         await prisma.$transaction(operations);
 
+        let numPosts = posts.length;
+
         // Handle pagination
         if (pageInfo.has_next_page) {
             // Fetch next page and parse posts
-            const {data} = await data365.getPosts(search, pageInfo.cursor);
-            await parsePosts(data.items, search, data.page_info);
+            const { data } = await data365.getPosts(search, pageInfo.cursor);
+            numPosts += await parsePosts(data.items, search, data.page_info);
         }
 
+        return numPosts;
         console.log('Posts parsed and saved successfully!');
     } catch (error) {
         throw error;
