@@ -1,22 +1,13 @@
-'use server';
-
-/// Uses Data365 to retrieve the latest posts from LinkedIn and update the posts in the database
-/// This script is intended to be run on a schedule (e.g. daily) to keep the posts up to date
-
-import data365 from '@/lib/data365';
 import mistral from '@/lib/mistral';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
-    const res = await request.json()
     try {
         await processUnflaggedPosts();
     } catch (error) {
-        return new Response(JSON.stringify({ input: res, error }), {
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return new Response('Error - ❌ Failed to process posts');
     }
 
     return new Response('OK - ✅ Processed');
