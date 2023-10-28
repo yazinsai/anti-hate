@@ -22,7 +22,6 @@ export default async function Home() {
 }
 
 async function checkPost(post: string) {
-  await mistral.start()
   return await mistral.isFlagged(post)
 }
 

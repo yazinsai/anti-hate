@@ -27,35 +27,22 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
     try {
         // Iterate over the parsed posts and create or update the corresponding Prisma models
         const operations = posts.map((post) => {
+            const data = {
+                lang: post.lang ?? '',
+                authorId: post.author_id,
+                authorName: post.author.name,
+                authorUsername: post.author.username,
+                text: post.text ?? post.article?.title ?? '',
+                url: post.url,
+                createdAt: new Date(post.timestamp * 1000),
+            }
+
             return prisma.posts.upsert({
                 where: { id: post.id },
-                update: {
-                    lang: post.lang ?? '',
-                    authorId: post.author_id,
-                    text: post.text ?? post.article?.title,
-                    url: post.url,
-                    isProcessed: false,
-                    isFlagged: false,
-                    createdAt: new Date(post.timestamp * 1000),
-                },
+                update: data,
                 create: {
                     id: post.id,
-                    lang: post.lang ?? '',
-                    author: {
-                        connectOrCreate: {
-                            where: { id: post.author_id },
-                            create: {
-                                id: post.author_id,
-                                name: post.author.name,
-                                username: post.author.username,
-                            }
-                        }
-                    },
-                    text: post.text ?? post.article?.title ?? '',
-                    url: post.url,
-                    isProcessed: false,
-                    isFlagged: false,
-                    createdAt: new Date(post.timestamp * 1000),
+                    ...data
                 },
             });
         })

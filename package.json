@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "refresh": "npx --yes tsx ./src/scripts/refresh-posts-from-linkedin.ts",
-    "flag": "npx --yes tsx ./src/scripts/flag-posts.ts"
+    "import-from-json": "npx --yes tsx ./src/scripts/import-from-json.ts",
+    "refresh": "npx --yes tsx ./src/scripts/refresh-posts-from-linkedin.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.4.2",
