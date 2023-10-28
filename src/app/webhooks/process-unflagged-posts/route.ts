@@ -1,6 +1,7 @@
 import mistral from '@/lib/mistral';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic'
 const MIN_POST_LENGTH = 10; // in chars
 
 const prisma = new PrismaClient();
