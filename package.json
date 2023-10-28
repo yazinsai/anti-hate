@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
+    "import-from-json": "npx --yes tsx ./src/scripts/import-from-json.ts",
     "refresh": "npx --yes tsx ./src/scripts/refresh-posts-from-linkedin.ts",
     "flag": "npx --yes tsx ./src/scripts/flag-posts.ts"
   },
