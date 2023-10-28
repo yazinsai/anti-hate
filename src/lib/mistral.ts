@@ -78,4 +78,4 @@ function cleanup(response: string) {
         .trim();
 }
 
-export default new Mistral('local');
+export default new Mistral('remote');
