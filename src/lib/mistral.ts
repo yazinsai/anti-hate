@@ -1,4 +1,13 @@
 import { Ollama } from 'ollama-node';
+import { z } from "zod";
+
+const SentimentSchema = z.object({
+    violence: z.boolean(),
+    side: z.string(),
+    snippet: z.string(),
+});
+
+export type Sentiment = z.infer<typeof SentimentSchema>;
 
 class Mistral {
     private ollama: Ollama;
@@ -17,6 +26,12 @@ class Mistral {
         const prompt = `If the post explicitly incites violence, reply with 'YES'. Otherwise, reply 'NO'. Do NOT explain. Post: ${text}\n\nOutput: `
         const output = await this.submit(prompt);
         return output.startsWith("YES")
+    }
+
+    async getSentiment(post: string): Promise<Sentiment> {
+        const prompt = `For the following post, respond with a JSON object that includes the following fields: - "violence": A boolean flag, indicating if the post explicitly incites violence. - "side": A string indicating the side for which the author of the post likely supports (either Palestine or Israel) - "snippet": The most hateful snippet in the post (maximum of 10 words). Post: ${post}`;
+        const response = await this.submit(prompt);
+        return SentimentSchema.parse(JSON.parse(response));
     }
 
     async submit(prompt: string) {
