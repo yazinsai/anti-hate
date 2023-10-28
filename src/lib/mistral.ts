@@ -3,8 +3,8 @@ import { z } from "zod";
 
 const SentimentSchema = z.object({
     violence: z.boolean(),
-    side: z.string(),
-    snippet: z.string(),
+    side: z.string().nullable().default("Palestine"),
+    snippet: z.string().nullable().default(""),
 });
 
 export type Sentiment = z.infer<typeof SentimentSchema>;
@@ -18,10 +18,6 @@ class Mistral {
         this.ollama = new Ollama();
     }
 
-    async start(): Promise<void> {
-        if (this.mode === 'local') await this.ollama.setModel("mistral")
-    }
-
     async isFlagged(text: string): Promise<boolean> {
         const prompt = `If the post explicitly incites violence, reply with 'YES'. Otherwise, reply 'NO'. Do NOT explain. Post: ${text}\n\nOutput: `
         const output = await this.submit(prompt);
@@ -29,13 +25,17 @@ class Mistral {
     }
 
     async getSentiment(post: string): Promise<Sentiment> {
-        const prompt = `For the following post, respond with a JSON object that includes the following fields: - "violence": A boolean flag, indicating if the post explicitly incites violence. - "side": A string indicating the side for which the author of the post likely supports (either Palestine or Israel) - "snippet": The most hateful snippet in the post (maximum of 10 words). Post: ${post}`;
-        const response = await this.submit(prompt);
-        return SentimentSchema.parse(JSON.parse(response));
+        const cleanedPost = post.replace(/\n/g, '');
+        const prompt = `For the following post, respond with a JSON object that includes the following fields: - "violence": A boolean flag, indicating if the post explicitly incites violence. - "side": A string indicating the side for which the author of the post likely supports (either Palestine or Israel) - "snippet": The most hateful snippet in the post (maximum of 10 words). Post: ${cleanedPost}`;
+        const response = cleanup(await this.submit(prompt));
+        const data = SentimentSchema.parse(JSON.parse(response));
+
+        return data;
     }
 
     async submit(prompt: string) {
         if (this.mode === 'local') {
+            await this.ollama.setModel("mistral")
             return this._local(prompt);
         } else {
             return this._remote(prompt);
@@ -71,4 +71,11 @@ class Mistral {
     }
 }
 
-export default new Mistral('remote');
+function cleanup(response: string) {
+    return response
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim();
+}
+
+export default new Mistral('local');

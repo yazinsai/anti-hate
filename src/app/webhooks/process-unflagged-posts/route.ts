@@ -28,8 +28,6 @@ async function processUnflaggedPosts() {
             },
         });
 
-        await mistral.start();
-
         for (const post of posts) {
             try {
                 const content = removeHashtags(post.text);
