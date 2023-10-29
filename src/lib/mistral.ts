@@ -1,5 +1,6 @@
 import { Ollama } from 'ollama-node';
 import { z } from "zod";
+import heal from "json-heal";
 
 const SentimentSchema = z.object({
     violence: z.boolean(),
@@ -26,9 +27,25 @@ class Mistral {
 
     async getSentiment(post: string): Promise<Sentiment> {
         const cleanedPost = post.replace(/\n/g, '');
-        const prompt = `For the following post, respond with a JSON object that includes the following fields: - "violence": A boolean flag, indicating if the post explicitly incites violence. - "side": A string indicating the side for which the author of the post likely supports (either Palestine or Israel) - "snippet": The most hateful snippet in the post (maximum of 10 words). Post: ${cleanedPost}`;
+        const prompt = `For the following post, respond with a JSON object that includes the following fields: - "violence": A boolean flag, indicating if the post explicitly incites violence. - "side": A string indicating the side for which the author of the post likely supports (either Palestine or Israel) - "snippet": The most hateful snippet in the post (maximum of 10 words). Post: ${cleanedPost}\n\nOutput:`;
         const response = cleanup(await this.submit(prompt));
-        const data = SentimentSchema.parse(JSON.parse(response));
+
+        // Attempt to heal (mildly) malformed JSON
+        let json;
+        try {
+            json = JSON.parse(response);
+        } catch (e) {
+            const healed = heal(response)
+            json = JSON.parse(healed)
+        }
+
+        let data;
+        try {
+            data = SentimentSchema.parse(json);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
 
         return data;
     }
@@ -75,6 +92,7 @@ function cleanup(response: string) {
     return response
         .replace(/```json/g, '')
         .replace(/```/g, '')
+        .replace(/\n/g, '')
         .trim();
 }
 
