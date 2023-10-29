@@ -2,7 +2,7 @@
 import {useState} from "react";
 import PostModal from "@/app/components/PostModal";
 
-export default function Post({ text, image, role, companyName }) {
+export default function Post({ text, image, role, companyName, companyEmail }) {
     const [showModal, setShowModal] = useState(false);
 
     return (
@@ -19,7 +19,7 @@ export default function Post({ text, image, role, companyName }) {
                 </div>
             </div>
             { showModal ? (
-                <PostModal setShowModal={setShowModal} name={"Yoav Shlomo"} text={text} role={role} image={image} shortCompanyName={"P&G"} companyName={companyName} />
+                <PostModal setShowModal={setShowModal} name={"Yoav Shlomo"} text={text} role={role} image={image} shortCompanyName={"P&G"} companyName={companyName} companyEmail={companyEmail} />
             ): null}
         </>
     )
