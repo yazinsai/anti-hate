@@ -6,7 +6,7 @@ const SUBJECTS = [
   "Employee inciting violence"
 ]
 
-function EmailModal({ show, onClose }) {
+function EmailModal({ show, onClose, post }) {
   const [status, setStatus] = React.useState("busy");
   const [email, setEmail] = React.useState("");
 
@@ -65,7 +65,7 @@ function EmailModal({ show, onClose }) {
   return (
     <Modal open={show} onClose={onClose}>
       <div
-        dangerouslySetInnerHTML={{ __html: email.replace(/\n/g, "<br/>") }}
+        dangerouslySetInnerHTML={{ __html: email.replace(/\n/g, "<br/>").replaceAll('[EMPLOYER]', post?.company).replaceAll('[EMPLOYEE_NAME]', post?.name).replaceAll('[POST_CONTENT]', post?.text) }}
       ></div>
       <button
         className="w-full mt-4 bg-gray-700 text-white font-semibold px-4 py-2 rounded-md disabled:bg-gray-100 disabled:text-gray-300"

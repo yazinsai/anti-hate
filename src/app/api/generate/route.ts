@@ -11,7 +11,7 @@ export const config = {
 
 const ORIGINAL_MESSAGE = `Dear [EMPLOYER],
 
-We've come across a concerning post by your employee, [EMPLOYEE_NAME], dated [POST_DATE]. This content is not only alarming but could reflect negatively on any affiliated organization.
+We've come across a concerning post by your employee, [EMPLOYEE_NAME] on LinkedIn. This content is not only alarming but could reflect negatively on any affiliated organization.
 
 [POST_CONTENT]
 
@@ -103,11 +103,6 @@ const streamFromResponse = (response: any): ReadableStream => {
 
 export async function POST(request: Request) {
   try {
-    // const json = await request.json()
-    // EMPLOYER
-    // EMPLOYEE_NAME
-    // POST
-    // POST_CONTENT
     const stream = await generateUniqueEmail();
     return new Response(stream);
   } catch (error) {

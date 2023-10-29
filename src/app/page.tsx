@@ -71,7 +71,7 @@ Israel today...who knows where tomorrow???? My heart is torn to pieces...May we 
         </div>
       </div>
 
-      <EmailModal show={show} onClose={() => setShow(false)} />
+      <EmailModal show={show} onClose={() => setShow(false)} post={selectedPost} />
     </main>
   )
 }
