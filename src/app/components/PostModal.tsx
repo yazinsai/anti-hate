@@ -1,5 +1,6 @@
 import {useState} from "react";
 
+// @ts-ignore
 export default function PostModal({setShowModal, text, image, name, role, companyName, shortCompanyName, companyEmail}) {
     const [showEmail, setShowEmail] = useState(false)
 
@@ -57,7 +58,7 @@ Thanks for your attention,
                         <div className={"pb-6 px-5"}>
                             <a href={`mailto:${companyEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(mailContent)}`}
                                     className={"text-center bg-black py-2 px-4 rounded text-white mt-5 w-full"}
-                                    type="button">Send via Gmail -></a>
+                                    type="button">Send via Gmail -{">"}</a>
                         </div>
                     </>
                 ): (

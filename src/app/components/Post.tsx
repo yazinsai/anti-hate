@@ -2,6 +2,7 @@
 import {useState} from "react";
 import PostModal from "@/app/components/PostModal";
 
+// @ts-ignore
 export default function Post({ text, image, role, companyName, companyEmail }) {
     const [showModal, setShowModal] = useState(false);
 
