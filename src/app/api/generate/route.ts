@@ -103,7 +103,7 @@ const streamFromResponse = (response: any): ReadableStream => {
 
 export async function POST(request: Request) {
   try {
-    const json = await request.json()
+    // const json = await request.json()
     // EMPLOYER
     // EMPLOYEE_NAME
     // POST
