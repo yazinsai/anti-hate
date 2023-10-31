@@ -26,6 +26,7 @@ export async function POST(request: Request) {
 async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
     try {
         let numPosts = 0
+        let startTime = performance.now();
 
         // If the first post in the series exists, skip the batch
         const firstPost = await prisma.posts.findFirst({
@@ -67,11 +68,25 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
         if (pageInfo.has_next_page) {
             // Fetch next page and parse posts
             const { data } = await data365.getPosts(search, pageInfo.cursor);
-            numPosts += await parsePosts(data.items, search, data.page_info);
+
+            // Check if 4 minutes have passed
+            const elapsed = (performance.now() - startTime) / 1000;
+            if (elapsed >= maxDuration - 60) {
+                // Trigger a fetch request to the same endpoint with the response from the last request
+                fetch('/webhooks/save-to-db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ search, pageInfo }),
+                });
+            } else {
+                numPosts += await parsePosts(data.items, search, data.page_info);
+            }
         }
 
-        return numPosts;
         console.log('Posts parsed and saved successfully!');
+        return numPosts;
     } catch (error) {
         throw error;
     } finally {
