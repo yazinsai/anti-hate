@@ -21,6 +21,7 @@ export async function GET(request: Request) {
 }
 
 async function processUnflaggedPosts() {
+    const startTime = performance.now();
     await prisma.$connect();
 
     try {
@@ -33,6 +34,14 @@ async function processUnflaggedPosts() {
 
         for (const post of posts) {
             try {
+                // Check if 4 minutes have passed
+                const elapsed = (performance.now() - startTime) / 1000;
+                if (elapsed > maxDuration - 60) {
+                    // continue in a separate request
+                    fetch('/webhooks/process-unflagged-posts');
+                    break;
+                }
+
                 const content = removeHashtags(post.text);
                 if (content.length < MIN_POST_LENGTH) continue;
 
