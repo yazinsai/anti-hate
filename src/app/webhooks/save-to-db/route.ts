@@ -28,40 +28,31 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
         let numPosts = 0
         let startTime = performance.now();
 
-        // If the first post in the series exists, skip the batch
-        const firstPost = await prisma.posts.findFirst({
-            where: {
-                url: posts[0].url,
-            },
-        });
+        // Iterate over the parsed posts and create or update the corresponding Prisma models
+        const operations = posts.map((post) => {
+            const data = {
+                lang: post.lang ?? '',
+                authorId: post.author_id,
+                authorName: post.author.name,
+                authorUsername: post.author.username,
+                text: post.text ?? post.article?.title ?? '',
+                url: post.url,
+                createdAt: new Date(post.timestamp * 1000),
+            }
 
-        if (!firstPost) {
-            // Iterate over the parsed posts and create or update the corresponding Prisma models
-            const operations = posts.map((post) => {
-                const data = {
-                    lang: post.lang ?? '',
-                    authorId: post.author_id,
-                    authorName: post.author.name,
-                    authorUsername: post.author.username,
-                    text: post.text ?? post.article?.title ?? '',
-                    url: post.url,
-                    createdAt: new Date(post.timestamp * 1000),
-                }
+            return prisma.posts.upsert({
+                where: { id: post.id },
+                update: data,
+                create: {
+                    id: post.id,
+                    ...data
+                },
+            });
+        })
 
-                return prisma.posts.upsert({
-                    where: { id: post.id },
-                    update: data,
-                    create: {
-                        id: post.id,
-                        ...data
-                    },
-                });
-            })
-
-            // Execute the operations as a single transaction
-            await prisma.$transaction(operations);
-            numPosts += posts.length;
-        }
+        // Execute the operations as a single transaction
+        await prisma.$transaction(operations);
+        numPosts += posts.length;
 
 
         // Handle pagination
