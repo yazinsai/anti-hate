@@ -14,6 +14,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@prisma/client": "^5.4.2",
+    "airplane": "^0.2.81",
     "eventsource-parser": "^1.1.1",
     "json-heal": "^0.4.6",
     "next": "13.5.6",
