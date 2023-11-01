@@ -83,12 +83,14 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
 
     // Execute the operations as a single transaction
     await prisma.$transaction(operations);
+    console.log(`📀 Saved ${posts.length}`)
     numPosts += posts.length;
 
 
     // Handle pagination
     if (pageInfo.has_next_page) {
       // Fetch next page and parse posts
+      console.log('🫧 Fetching more');
       const { data } = await data365.getPosts(search, pageInfo.cursor);
       numPosts += await parsePosts(data.items, search, data.page_info);
     }
