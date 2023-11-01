@@ -5,9 +5,7 @@ import {
   createParser,
 } from "eventsource-parser";
 
-export const config = {
-  runtime: "edge",
-};
+export const runtime = "edge"
 
 const ORIGINAL_MESSAGE = `Dear [EMPLOYER],
 

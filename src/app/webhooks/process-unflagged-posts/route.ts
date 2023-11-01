@@ -1,6 +1,11 @@
 import mistral from '@/lib/mistral';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic'
+export const maxDuration = 300 // seconds
+
+const MIN_POST_LENGTH = 10; // in chars
+
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
@@ -16,30 +21,40 @@ export async function GET(request: Request) {
 }
 
 async function processUnflaggedPosts() {
+    const startTime = performance.now();
     await prisma.$connect();
 
     try {
         // Fetch unprocessed posts
         const posts = await prisma.posts.findMany({
             where: {
-                isProcessed: false,
+                sentiment: false,
             },
         });
 
-        await mistral.start();
-
         for (const post of posts) {
-            // Flag it
-            const postWithoutHashtags = removeHashtags(post.text)
             try {
-                const flag = await mistral.isFlagged(postWithoutHashtags);
+                // Check if 4 minutes have passed
+                const elapsed = (performance.now() - startTime) / 1000;
+                if (elapsed > maxDuration - 60) {
+                    // continue in a separate request
+                    fetch('/webhooks/process-unflagged-posts');
+                    break;
+                }
+
+                const content = removeHashtags(post.text);
+                if (content.length < MIN_POST_LENGTH) continue;
+
+                const { violence, side, snippet } = await mistral.getSentiment(content);
                 await prisma.posts.update({
                     where: {
                         id: post.id,
                     },
                     data: {
-                        isFlagged: flag,
-                        isProcessed: true,
+                        sentiment: true,
+                        sentimentViolence: violence,
+                        sentimentSide: side,
+                        sentimentSnippet: snippet,
                     },
                 });
             } catch (error: any) {

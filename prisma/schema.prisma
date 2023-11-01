@@ -6,26 +6,25 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Posts {
-  id          String   @id
-  lang        String
-  authorId    String
-  author      Authors  @relation(fields: [authorId], references: [id])
-  createdAt   DateTime @default(now())
-  text        String
-  url         String
-  isProcessed Boolean  @default(false)
-  isFlagged   Boolean  @default(false)
-}
+  id        String   @id @map("_id")
+  lang      String
+  createdAt DateTime @default(now())
+  text      String
+  url       String
 
-model Authors {
-  id       String  @id
-  name     String
-  username String
-  posts    Posts[]
+  // Author details
+  authorId       String
+  authorName     String
+  authorUsername String
+
+  // Sentiment values
+  sentiment         Boolean @default(false)
+  sentimentSide     String?
+  sentimentViolence Boolean @default(false)
+  sentimentSnippet  String?
 }
