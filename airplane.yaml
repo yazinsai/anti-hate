@@ -1,2 +1,4 @@
 javascript:
   nodeVersion: "18"
+python:
+  createVenv: false

@@ -22,19 +22,19 @@ export default airplane.task(
     },
     envVars: {
       DATA365_API_KEY: {
-        value: process.env.DATA365_API_KEY!
+        config: 'DATA365_API_KEY'
       },
       DATABASE_URL: {
-        value: process.env.DATABASE_URL!
+        config: 'DATABASE_URL'
       },
       FIREWORKS_API_KEY: {
-        value: process.env.FIREWORKS_API_KEY!
+        config: 'FIREWORKS_API_KEY'
       },
       OPENAI_API_KEY: {
-        value: process.env.OPENAI_API_KEY!
+        config: 'OPENAI_API_KEY'
       }
     },
-    webhooks: ["my_webhook"]
+    webhooks: { my_webhook: { requireAirplaneToken: false } },
   },
   // This is your task's entrypoint. When your task is executed, this
   // function will be called.
@@ -90,7 +90,7 @@ async function parsePosts(posts: Post[], search: any, pageInfo: PageInfo) {
     // Handle pagination
     if (pageInfo.has_next_page) {
       // Fetch next page and parse posts
-      console.log('🫧 Fetching more');
+      console.log('🫧 Fetching next page');
       const { data } = await data365.getPosts(search, pageInfo.cursor);
       numPosts += await parsePosts(data.items, search, data.page_info);
     }
