@@ -2,3 +2,13 @@ javascript:
   nodeVersion: "18"
 python:
   createVenv: false
+view:
+  envVars:
+    DATA365_API_KEY:
+      config: DATA365_API_KEY
+    DATABASE_URL:
+      config: DATABASE_URL
+    FIREWORKS_API_KEY:
+      config: FIREWORKS_API_KEY
+    OPENAI_API_KEY:
+      config: OPENAI_API_KEY

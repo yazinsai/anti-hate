@@ -2,7 +2,7 @@
 /// This script is intended to be run on a schedule (e.g. daily) to keep the posts up to date
 
 import data365 from '@/lib/data365';
-import { PageInfo, Post, ResponseSchema } from '@/models/posts';
+import { PageInfo, Post, WebhookSchema } from '@/models/posts';
 import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic'
@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
     const res = await request.json()
     try {
-        const { data } = ResponseSchema.parse(res);
+        const { data } = WebhookSchema.parse(res);
         const numPosts = await parsePosts(data.posts.items, data.search, data.posts.page_info);
         return new Response(`OK - ✅ Processed ${numPosts} posts`);
     } catch (error) {

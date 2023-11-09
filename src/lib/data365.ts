@@ -5,7 +5,7 @@ const DAY = 24 * 60 * 60 * 1000;
 class Data365 {
     constructor(private apiKey: string) {
         if (!apiKey) {
-            throw new Error('API key is required');
+            throw new Error('Data365 API key is required');
         }
 
         this.apiKey = apiKey;

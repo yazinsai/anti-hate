@@ -72,7 +72,7 @@ const SearchSchema = z.object({
 });
 export type Search = z.infer<typeof SearchSchema>;
 
-export const ResponseSchema = z.object({
+export const WebhookSchema = z.object({
   data: z.object({
     posts: z.object({
       items: z.array(PostSchema),
